@@ -9,13 +9,6 @@ import ExportButton from '@/components/ExportButton';
 import Layout from '@/components/Layout';
 
 export default function DashboardPage({ employees }: { employees: any[] }) {
-  const [departmentFilter, setDepartmentFilter] = useState('');
-
-  const filteredEmployees = departmentFilter
-    ? employees.filter((emp: any) => emp.department === departmentFilter)
-    : employees;
-
-  const departments = [...new Set(employees.map((emp: any) => emp.department))] as string[];
 
   return (
     <Layout>
