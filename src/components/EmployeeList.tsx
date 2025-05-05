@@ -6,6 +6,7 @@ import {
   Paper,
   Grid,
   Chip,
+  CircularProgress,
 } from '@mui/material';
 import { parseISO, format } from 'date-fns';
 import TextField from '@mui/material/TextField';
@@ -19,6 +20,7 @@ interface EmployeeListProps {
 export default function EmployeeList({ employees }: EmployeeListProps) {
   const today = new Date();
   const [departmentFilter, setDepartmentFilter] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const colors = ['#E3F2FD', '#E8F5E9', '#FFF3E0', '#F3E5F5', '#E1F5FE'];
   const getColor = (index: number) => colors[index % colors.length];
@@ -37,6 +39,13 @@ export default function EmployeeList({ employees }: EmployeeListProps) {
     })
   );
 
+  const handleDepartmentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsLoading(true);
+    setDepartmentFilter(e.target.value);
+    // Simulate loading state for better UX
+    setTimeout(() => setIsLoading(false), 300);
+  };
+
   return (
     <Box mb={6}>
       <Typography variant="h5" fontWeight="bold" gutterBottom>
@@ -47,9 +56,10 @@ export default function EmployeeList({ employees }: EmployeeListProps) {
         select
         label="Filter by Department"
         value={departmentFilter}
-        onChange={(e) => setDepartmentFilter(e.target.value)}
+        onChange={handleDepartmentChange}
         fullWidth
         sx={{ mb: 3 }}
+        disabled={isLoading}
       >
         <MenuItem value="">All Departments</MenuItem>
         {departments.map((dept) => (
@@ -59,7 +69,11 @@ export default function EmployeeList({ employees }: EmployeeListProps) {
         ))}
       </TextField>
 
-      {employeesOnLeaveToday.length === 0 ? (
+      {isLoading ? (
+        <Box display="flex" justifyContent="center" p={4}>
+          <CircularProgress />
+        </Box>
+      ) : employeesOnLeaveToday.length === 0 ? (
         <Box mt={2} p={3} borderRadius={2} bgcolor="background.paper" boxShadow={1}>
           <Typography variant="body1" color="text.secondary" align="center">
             No employees are currently on leave in this department.

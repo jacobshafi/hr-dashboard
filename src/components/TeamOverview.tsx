@@ -7,6 +7,7 @@ import {
   Grid,
   Paper,
   useTheme,
+  CircularProgress,
 } from '@mui/material';
 import dynamic from 'next/dynamic';
 
@@ -19,6 +20,7 @@ interface TeamOverviewProps {
 export default function TeamOverview({ employees }: TeamOverviewProps) {
   const [employeesOnLeave, setEmployeesOnLeave] = useState(0);
   const [deptBreakdown, setDeptBreakdown] = useState<Record<string, number>>({});
+  const [isLoading, setIsLoading] = useState(true);
 
   const theme = useTheme();
 
@@ -38,7 +40,19 @@ export default function TeamOverview({ employees }: TeamOverviewProps) {
       return acc;
     }, {});
     setDeptBreakdown(breakdown);
+
+    // Simulate loading state for better UX
+    const timer = setTimeout(() => setIsLoading(false), 300);
+    return () => clearTimeout(timer);
   }, [employees]);
+
+  if (isLoading) {
+    return (
+      <Box mt={6} display="flex" justifyContent="center">
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   const totalEmployees = employees.length;
   const activeEmployees = employees.filter((emp: any) => emp.isActive).length;

@@ -7,6 +7,7 @@ import {
   Button,
   Grid,
   Avatar,
+  CircularProgress,
 } from "@mui/material";
 import { parseISO, isWithinInterval, startOfWeek, endOfWeek, format } from "date-fns";
 import { useEffect, useState } from "react";
@@ -20,12 +21,22 @@ export default function BirthdayList({ employees }: BirthdayListProps) {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedName, setSelectedName] = useState("");
   const [today, setToday] = useState<Date | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     setToday(new Date());
+    // Simulate loading state for better UX
+    const timer = setTimeout(() => setIsLoading(false), 500);
+    return () => clearTimeout(timer);
   }, []);
 
-  if (today === null) return null;
+  if (today === null || isLoading) {
+    return (
+      <Box mt={5} display="flex" justifyContent="center">
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   const thisWeekStart = startOfWeek(today, { weekStartsOn: 1 });
   const thisWeekEnd = endOfWeek(today, { weekStartsOn: 1 });
