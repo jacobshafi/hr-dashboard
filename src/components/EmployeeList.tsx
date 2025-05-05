@@ -7,30 +7,27 @@ import {
   Grid,
   Chip,
 } from '@mui/material';
-import { useQuery } from '@apollo/client';
-import { GET_EMPLOYEES } from '@/graphql/queries';
 import { parseISO, format } from 'date-fns';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import { useState } from 'react';
 
-export default function EmployeeList() {
-  
-  const { loading, error, data } = useQuery(GET_EMPLOYEES);
+interface EmployeeListProps {
+  employees: any[];
+}
+
+export default function EmployeeList({ employees }: EmployeeListProps) {
   const today = new Date();
   const [departmentFilter, setDepartmentFilter] = useState('');
 
   const colors = ['#E3F2FD', '#E8F5E9', '#FFF3E0', '#F3E5F5', '#E1F5FE'];
   const getColor = (index: number) => colors[index % colors.length];
 
-  if (loading) return <Typography>Loading...</Typography>;
-  if (error) return <Typography color="error">Error: {error.message}</Typography>;
-
-  const departments = [...new Set(data.employees.map((emp: any) => emp.department))];
+  const departments = [...new Set(employees.map((emp: any) => emp.department))];
 
   const filteredEmployees = departmentFilter
-    ? data.employees.filter((emp: any) => emp.department === departmentFilter)
-    : data.employees;
+    ? employees.filter((emp: any) => emp.department === departmentFilter)
+    : employees;
 
   const employeesOnLeaveToday = filteredEmployees.filter((emp: any) =>
     emp.leaves.some((leave: any) => {

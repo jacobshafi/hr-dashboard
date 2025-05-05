@@ -1,13 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useQuery } from '@apollo/client';
-import { GET_EMPLOYEES } from '@/graphql/queries';
 import {
   Box,
   Typography,
-  CircularProgress,
-  Alert,
   Grid,
   Paper,
   useTheme,
@@ -16,38 +12,36 @@ import dynamic from 'next/dynamic';
 
 const DepartmentBreakdown = dynamic(() => import('./DepartmentBreakdown'), { ssr: false });
 
-export default function TeamOverview() {
-  const { loading, error, data } = useQuery(GET_EMPLOYEES);
+interface TeamOverviewProps {
+  employees: any[];
+}
+
+export default function TeamOverview({ employees }: TeamOverviewProps) {
   const [employeesOnLeave, setEmployeesOnLeave] = useState(0);
   const [deptBreakdown, setDeptBreakdown] = useState<Record<string, number>>({});
 
   const theme = useTheme();
 
   useEffect(() => {
-    if (data?.employees) {
-      const today = new Date();
-      const onLeave = data.employees.filter((emp: any) =>
-        emp.leaves.some((leave: any) => {
-          const start = new Date(leave.startDate);
-          const end = new Date(leave.endDate);
-          return start <= today && today <= end;
-        })
-      ).length;
-      setEmployeesOnLeave(onLeave);
+    const today = new Date();
+    const onLeave = employees.filter((emp: any) =>
+      emp.leaves.some((leave: any) => {
+        const start = new Date(leave.startDate);
+        const end = new Date(leave.endDate);
+        return start <= today && today <= end;
+      })
+    ).length;
+    setEmployeesOnLeave(onLeave);
 
-      const breakdown = data.employees.reduce((acc: Record<string, number>, emp: any) => {
-        acc[emp.department] = (acc[emp.department] || 0) + 1;
-        return acc;
-      }, {});
-      setDeptBreakdown(breakdown);
-    }
-  }, [data]);
+    const breakdown = employees.reduce((acc: Record<string, number>, emp: any) => {
+      acc[emp.department] = (acc[emp.department] || 0) + 1;
+      return acc;
+    }, {});
+    setDeptBreakdown(breakdown);
+  }, [employees]);
 
-  if (loading) return <CircularProgress sx={{ mt: 4 }} />;
-  if (error) return <Alert severity="error">Error: {error.message}</Alert>;
-
-  const totalEmployees = data.employees.length;
-  const activeEmployees = data.employees.filter((emp: any) => emp.isActive).length;
+  const totalEmployees = employees.length;
+  const activeEmployees = employees.filter((emp: any) => emp.isActive).length;
 
   const metrics = [
     { label: 'Total Employees', value: totalEmployees },

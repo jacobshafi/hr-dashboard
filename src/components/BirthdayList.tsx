@@ -4,20 +4,19 @@ import {
   Typography,
   Box,
   Paper,
-  CircularProgress,
-  Alert,
   Button,
   Grid,
   Avatar,
 } from "@mui/material";
-import { useQuery } from "@apollo/client";
-import { GET_EMPLOYEES } from "@/graphql/queries";
 import { parseISO, isWithinInterval, startOfWeek, endOfWeek, format } from "date-fns";
 import { useEffect, useState } from "react";
 import BirthdayWishModal from "./BirthdayWishModal";
 
-export default function BirthdayList() {
-  const { loading, error, data } = useQuery(GET_EMPLOYEES);
+interface BirthdayListProps {
+  employees: any[];
+}
+
+export default function BirthdayList({ employees }: BirthdayListProps) {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedName, setSelectedName] = useState("");
   const [today, setToday] = useState<Date | null>(null);
@@ -26,13 +25,12 @@ export default function BirthdayList() {
     setToday(new Date());
   }, []);
 
-  if (loading || today === null) return <CircularProgress />;
-  if (error) return <Alert severity="error">Error: {error.message}</Alert>;
+  if (today === null) return null;
 
   const thisWeekStart = startOfWeek(today, { weekStartsOn: 1 });
   const thisWeekEnd = endOfWeek(today, { weekStartsOn: 1 });
 
-  const birthdaysThisWeek = data.employees.filter((emp: any) => {
+  const birthdaysThisWeek = employees.filter((emp: any) => {
     const dob = parseISO(emp.dateOfBirth);
     const birthdayThisYear = new Date(today.getFullYear(), dob.getMonth(), dob.getDate());
     return isWithinInterval(birthdayThisYear, { start: thisWeekStart, end: thisWeekEnd });

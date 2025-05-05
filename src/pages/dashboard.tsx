@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { MockedProvider } from '@apollo/client/testing';
-import { employeesMock } from '@/mocks/employees';
 import Box from '@mui/material/Box';
+import { employeesMock } from '@/mocks/employees';
 
 import EmployeeList from '@/components/EmployeeList';
 import BirthdayList from '@/components/BirthdayList';
@@ -19,25 +18,20 @@ export default function DashboardPage({ employees }: { employees: any[] }) {
   const departments = [...new Set(employees.map((emp: any) => emp.department))] as string[];
 
   return (
-    <MockedProvider mocks={employeesMock} addTypename={false}>
-      <Layout>
-        <Box display="flex" justifyContent="space-between" alignItems="center">
-          <h1>Employee Overview</h1>
-          <ExportButton />
-        </Box>
+    <Layout>
+      <Box display="flex" justifyContent="space-between" alignItems="center">
+        <h1>Employee Overview</h1>
+        <ExportButton employees={employees} />
+      </Box>
 
-        <EmployeeList />
-        <BirthdayList />
-        <TeamOverview />
-      </Layout>
-    </MockedProvider>
+      <EmployeeList employees={employees} />
+      <BirthdayList employees={employees} />
+      <TeamOverview employees={employees} />
+    </Layout>
   );
 }
 
 export async function getServerSideProps() {
-  return {
-    props: {
-      employees: employeesMock[0].result.data.employees,
-    },
-  };
+  const employees = employeesMock[0].result.data.employees;
+  return { props: { employees } };
 }
