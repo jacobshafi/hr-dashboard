@@ -42,7 +42,7 @@ export default function EmployeeList({ employees }: EmployeeListProps) {
   const handleDepartmentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsLoading(true);
     setDepartmentFilter(e.target.value);
-    // Simulate loading state for better UX
+    // Simulate loading state for the sake of the demo
     setTimeout(() => setIsLoading(false), 300);
   };
 
